@@ -12,24 +12,41 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 
-const upload = multer({ storage });
+const upload = multer({ 
+    storage,
+    fileFilter: (req, file, cb) => {
+        const filetypes = /jpeg|jpg|png|gif/;
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = filetypes.test(file.mimetype);
+        if (extname && mimetype) {
+            return cb(null, true);
+        } else {
+            cb(new Error('Only images are allowed'));
+        }
+    }
+});
 
-// upload image
-router.post('/upload',verifyToken, async(req , res) => {
+// upload image save in the dire uploads
+router.post('/upload', verifyToken, upload.single('image'), async (req, res) => {
     try {
         const newImage = new Image({
-            tittle: req.body.tittle,
+            title: req.body.title,
             description: req.body.description,
             imagePath: req.file.path,
             createdBy: req.user.userId
         })
+         
         await newImage.save();
         res.status(201).json({ message: 'Image uploaded successfully' });
+
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Server error' });
+           if(!req.file) {
+                return res.status(400).json({ message: 'No file uploaded' });
+            } 
+        res.status(500).json({ message: 'Server error in uploading image' });
     }
-})
+});
 
 // public image for all user
 router.get('/',async(req, res) => {
@@ -70,8 +87,32 @@ router.put('/:id', verifyToken, async(req,res)=> {
     }
 })
 
+// like image
+router.post('/:id/like', verifyToken, async (req, res) => {
+  try {
+    const image = await Image.findById(req.params.id);
+    if (!image) {
+      return res.status(404).json({ message: 'Image not found' });
+    }
+
+    // check if user has already liked the image
+    if (image.likesBy && image.likesBy.includes(req.user.userId)) {
+      return res.status(400).json({ message: 'Already liked' });
+    }
+
+    image.likes += 1;
+    image.likesBy = [...(image.likesBy || []), req.user.userId];
+    await image.save();
+
+    res.json({ message: 'Image liked successfully', likes: image.likes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to like the image' });
+  }
+});
+
 // delete image
-router.delete('/:id', verifyToken, async(req, res) => {
+router.delete('/:id/', verifyToken, async(req, res) => {
     try {
         const image = await Image.findOne({_id:req.params.id, createdBy: req.user.userId});
         if (!image) {

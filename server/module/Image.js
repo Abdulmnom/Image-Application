@@ -5,6 +5,7 @@ const ImageSchema = new mongoose.Schema({
     description: String,
     imagePath: String,
     likes: { type: Number, default: 0 },
+    likesBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });
 

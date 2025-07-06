@@ -1,3 +1,4 @@
+const e = require('express');
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res , next) => {
@@ -8,7 +9,12 @@ const verifyToken = (req, res , next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
+        // نضمن أنه يحتوي فقط على البيانات التي نحتاجها
+        req.user =  {
+            userId: decoded.userId,
+            username: decoded.username,
+            email: decoded.email
+        }
         next();
     } catch (error) {
         console.error(error);

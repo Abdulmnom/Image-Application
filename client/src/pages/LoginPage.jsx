@@ -3,18 +3,27 @@ import { useNavigate } from 'react-router-dom'
 import { Card, Button, Form, Container, Row, Col, Alert } from 'react-bootstrap'
 import { AuthContext } from '../ContextApi/auth-context'
 import { useContext } from 'react'
+import axios from 'axios'
 
 const LoginPage = () => {
     const navigate = useNavigate();
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const auth = useContext(AuthContext);
+    const {login} = useContext(AuthContext);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
-    
-        setError('تم تسجيل الدخول بنجاح');
+        try {
+
+    const res = await axios.post('http://localhost:4000/api/auth/login', { email, password });
+        const { token, user } = res.data;
+        login(token, user);
+       navigate('/home');
+    } catch (error) {
+        console.log(error);
+            setError(error?.response?.data?.message || 'Login failed error in the server');
+        }
     };
 
     return (
@@ -36,33 +45,33 @@ const LoginPage = () => {
                                {error && <Alert variant="danger">{error}</Alert>}
                                 <Form onSubmit={handleSubmit}>
                                     <Form.Group className="mb-3" controlId="formUsername">
-                                        <Form.Label>اسم المستخدم</Form.Label>
+                                        <Form.Label>Email</Form.Label>
                                         <Form.Control
                                             type="text"
-                                            placeholder="ادخل اسم المستخدم"
-                                            value={username}
-                                            onChange={e => setUsername(e.target.value)}
+                                            placeholder="User Name"
+                                            value={email}
+                                            onChange={e => setEmail(e.target.value)}
                                             required
                                         />
                                     </Form.Group>
                                     <Form.Group className="mb-4" controlId="formPassword">
-                                        <Form.Label>كلمة المرور</Form.Label>
+                                        <Form.Label>password</Form.Label>
                                         <Form.Control
                                             type="password"
-                                            placeholder="ادخل كلمة المرور"
+                                            placeholder="Password"
                                             value={password}
                                             onChange={e => setPassword(e.target.value)}
                                             required
                                         />
                                     </Form.Group>
                                     <Button variant="success" type="submit" className="w-100 mb-2">
-                                        دخول
+                                      Login
                                     </Button>
                                 </Form>
                                 <div className="text-center mt-3">
-                                    <span>ليس لديك حساب؟ </span>
+                                    <span>You don't have an account? </span>
                                     <Button variant="outline-success" size="sm" onClick={() => navigate('/register')}>
-                                        إنشاء حساب
+                                       Create Account
                                     </Button>
                                 </div>
                             </Card.Body>
