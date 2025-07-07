@@ -1,76 +1,59 @@
 import React, { useContext } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom';
 import { Navbar as BsNavbar, Nav, Container, Button } from 'react-bootstrap'
 import { AuthContext } from '../ContextApi/auth-context'
+import { ThemeContext } from './ThemeContext'
+import { LanguageContext } from './LanguageContext';
 
 const Navbar = () => {
-    const { user, token, logout } = useContext(AuthContext);
-    const navigate = useNavigate();
+  const { token, user, logout } = useContext(AuthContext);
+  const { darkMode, toggleTheme } = useContext(ThemeContext);
+  const navigate = useNavigate();
+  const { t , toggleLang , lang} = useContext(LanguageContext);
 
-    return (
-        <BsNavbar
-            expand="md"
-            bg="primary"
-            variant="light"
-            dir="rtl"
-            className="main-navigation shadow-sm"
-            style={{
-                fontFamily: 'Cairo, sans-serif',
-                fontWeight: 'bold',
-                background: 'linear-gradient(90deg, #e3f0ff 0%, #b3d8fd 100%)'
-            }}
-        >
-            <Container fluid>
-                <BsNavbar.Brand
-                    as={NavLink}
-                    to="/home"
-                    style={{ color: '#1565c0', fontSize: '1.5rem', fontWeight: 'bold' }}
-                >
-                    Gallery
-                </BsNavbar.Brand>
-                <BsNavbar.Toggle aria-controls="navbarContent" />
-                <BsNavbar.Collapse id="navbarContent" className="main-navigation-items">
-                    <Nav className="me-auto">
-                        <Nav.Link as={NavLink} to="/home" className="nav-link" style={{ color: '#1565c0' }}>
-                            Home
-                        </Nav.Link>
-                        {token && (
-                            <Nav.Link as={NavLink} to="/my-gallery" className="nav-link" style={{ color: '#1565c0' }}>
-                                My Images
-                            </Nav.Link>
-                        )}
-                        {token && (
-                            <Nav.Link as={NavLink} to="/upload" className="nav-link" style={{ color: '#1565c0' }} >
-                             upload image
-                            </Nav.Link>
-                        )}
-                         {!token && (
-                            <Nav.Link as={NavLink} to="/login" className="nav-link" style={{ color: '#1565c0' }}>
-                                Login
-                            </Nav.Link>
-                        )}
-                    </Nav>
-                    {token && (
-                        <Nav>
-                            <Nav.Link as={NavLink} to="/profile" className="nav-link" style={{ color: '#28a745' }}>
-                                {user?.username || user?.email || 'User'}
-                            </Nav.Link>
-                            <Button
-                                variant="outline-danger"
-                                className="ms-2"
-                                onClick={() => {
-                                    logout();
-                                    navigate('/login');
-                                }}
-                            >
-                                Logout
-                            </Button>
-                        </Nav>
-                    )}
-                </BsNavbar.Collapse>
-            </Container>
-        </BsNavbar>
-    )
-}
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  return (
+    <BsNavbar bg={darkMode ? 'dark' : 'light'} variant={darkMode ? 'dark' : 'light'} expand="lg">
+      <Container>
+        <BsNavbar.Brand as={Link} to="/home">📸 Image Gallery</BsNavbar.Brand>
+        <BsNavbar.Toggle aria-controls="basic-navbar-nav" />
+        <BsNavbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
+            {token && (
+              <>
+                <Nav.Link as={Link} to="/upload">Upload Image</Nav.Link>
+                <Nav.Link as={Link} to="/my-gallery">My Gallery</Nav.Link>
+                <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
+              </>
+            )}
+          </Nav>
+          <Nav className="align-items-center gap-2">
+            <Button variant={darkMode ? 'secondary' : 'outline-secondary'} onClick={toggleTheme}>
+              {darkMode ? '☀️ Light' : '🌙 Dark'}
+            </Button>
+            {token ? (
+              <>
+                <span className="text-success fw-bold">Welcome, {user?.username}</span>
+                <Button variant="outline-danger" size="sm" onClick={handleLogout}>Logout</Button>
+              </>
+            ) : (
+              <>
+                <Button as={Link} to="/login" variant="outline-primary" size="sm">Login</Button>
+                <Button as={Link} to="/register" variant="primary" size="sm">Register</Button>
+              </>
+            )}
+            <Button variant="outline-secondary" size="sm" onClick={toggleLang}>
+  🌐          {lang === 'ar' ? 'English' : 'عربي'}
+            </Button>
+          </Nav>
+        </BsNavbar.Collapse>
+      </Container>
+    </BsNavbar>
+  );
+};
 
 export default Navbar

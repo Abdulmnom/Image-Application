@@ -44,7 +44,6 @@ function HomePage() {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #e3f0ff 0%, #b3d8fd 100%)",
         padding: "40px 0",
       }}
     >

@@ -43,7 +43,6 @@ const UploadForm = () => {
     <div
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
