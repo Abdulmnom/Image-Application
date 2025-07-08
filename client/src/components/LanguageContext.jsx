@@ -62,7 +62,14 @@ const translations = {
    cancel: 'إلغاء',
    image_deleted: '✅ تم حذف الصورة بنجاح',
    image_updated: '✅ تم تحديث الصورة بنجاح',
-   confirm_delete: 'هل أنت متأكد أنك تريد حذف هذه الصورة؟'
+   confirm_delete: 'هل أنت متأكد أنك تريد حذف هذه الصورة؟',
+   app_name: 'صوري',
+   invalid_email: 'البريد الالكتروني غير صالح',
+   password_too_short: 'كلمة المرور قصيرة جداً',
+   password_not_match: 'كلمة المرور غير متطابقة',
+   success : 'نجاح',
+   loading: 'جاري التحميل',
+   
   },
   en: {
     home: 'Home',
@@ -116,6 +123,18 @@ const translations = {
     select_image: 'Please select an image',
     edit: 'Edit',
     no_images: 'No images',
+   new_title: 'New Title',
+   new_description: 'New Description',
+   cancel: 'Cancel',
+   image_deleted: '✅ Image deleted successfully',
+   image_updated: '✅ Image updated successfully',
+   confirm_delete: 'Are you sure you want to delete this image?',
+   app_name: 'My Gallery',
+   invalid_email: 'Invalid email address',
+   password_too_short: 'Password is too short',
+   password_not_match: 'Passwords do not match',
+   success : 'Success',
+   loading: 'Loading',
   
   }
 };

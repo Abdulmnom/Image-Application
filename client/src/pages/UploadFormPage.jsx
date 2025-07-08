@@ -1,25 +1,32 @@
-import React from 'react'
-import axios from 'axios'
-import { AuthContext } from '../ContextApi/auth-context'
-import { LanguageContext } from '../components/LanguageContext'
-import { Form, Button, Container, Card, Alert, Row, Col } from 'react-bootstrap'
+import React from 'react';
+import axios from 'axios';
+import { AuthContext } from '../ContextApi/auth-context';
+import { LanguageContext } from '../components/LanguageContext';
+import {
+  Form, Button, Container, Card, Row, Col,
+  Toast, ToastContainer
+} from 'react-bootstrap';
 
 const UploadForm = () => {
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [image, setImage] = React.useState(null);
-  const [message, setMessage] = React.useState('');
+  const [toastMessage, setToastMessage] = React.useState('');
+  const [showToast, setShowToast] = React.useState(false);
+
   const { token } = React.useContext(AuthContext);
   const { t } = React.useContext(LanguageContext);
 
-  // Handle form submit for uploading image
   const handleSubmit = async (e) => {
     e.preventDefault();
     const PORT = `http://localhost:4000/api/images/upload`;
+
     if (!image) {
-      setMessage(t('select_image'));
+      setToastMessage(t('select_image'));
+      setShowToast(true);
       return;
     }
+
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
@@ -32,24 +39,20 @@ const UploadForm = () => {
           Authorization: token,
         },
       });
-      setMessage(res?.data?.message || t('upload_success'));
+
+      setToastMessage(res?.data?.message || t('upload_success'));
+      setShowToast(true);
       setTitle('');
       setDescription('');
       setImage(null);
     } catch (err) {
-      setMessage(err?.response?.data?.message || t('upload_failed'));
+      setToastMessage(err?.response?.data?.message || t('upload_failed'));
+      setShowToast(true);
     }
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Container>
         <Row className="justify-content-center">
           <Col xs={12} md={8} lg={6}>
@@ -58,7 +61,7 @@ const UploadForm = () => {
                 <Card.Title className="mb-4 text-center" style={{ fontWeight: 'bold', fontSize: '2rem', color: '#28a745' }}>
                   📤 {t('upload_image')}
                 </Card.Title>
-                {message && <Alert variant={message.includes(t('upload_success')) ? 'success' : 'danger'}>{message}</Alert>}
+
                 <Form onSubmit={handleSubmit}>
                   <Form.Group className="mb-3" controlId="formTitle">
                     <Form.Label>{t('image_title')}</Form.Label>
@@ -98,8 +101,15 @@ const UploadForm = () => {
           </Col>
         </Row>
       </Container>
+
+      {/* ✅ Toast Container */}
+      <ToastContainer position="bottom-end" className="p-3">
+        <Toast show={showToast} onClose={() => setShowToast(false)} delay={3000} autohide bg="success">
+          <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </div>
   );
 };
 
-export default UploadForm
+export default UploadForm;

@@ -10,6 +10,7 @@ import ProfilePage from './pages/ProfilePage.jsx';
 import Navbar from './components/Navbar';
 
 import { AuthContext } from './ContextApi/auth-context';
+import Footer from './components/Footer.jsx';
 
 const App = () => {
   const { token } = useContext(AuthContext);
@@ -26,8 +27,9 @@ const App = () => {
         <Route path="/register" element={!token ? <RegisterPage /> : <Navigate to="/home" />} />
         <Route path="/upload" element={token ? <UploadForm token={token} /> : <Navigate to="/login" />} />
         <Route path="/my-gallery" element={token ? <UserGalleryPage token={token} /> : <Navigate to="/login" />} />
-        <Route path="*" element={<h2>❌ الصفحة غير موجودة</h2>} />
+        <Route path="*" element={<h2>❌ 404 Not Found</h2>} />
       </Routes>
+      <Footer />
     </Router>
   );
 };

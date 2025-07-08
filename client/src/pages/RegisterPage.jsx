@@ -7,7 +7,7 @@ import axios from 'axios'
 
 const RegisterPage = () => {
     const navigate = useNavigate();
-    const { user, login } = useContext(AuthContext);
+    const {  login } = useContext(AuthContext);
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -19,19 +19,33 @@ const RegisterPage = () => {
     const { t } = useContext(LanguageContext);
 
 const handleSubmit = async (e) => {
+  // check for inputs validation
     e.preventDefault();
     if (password !== confirmPassword) {
-        setError('Passwords do not match');
+        setError(`❌ ${t('password_not_match')}`);
         return;
     }
+    if (!email.includes('@')) {
+      setError(`❌ ${t('invalid_email')}`);
+      return;
+    }
+    if (password.length < 6) {
+      setError(` ❌ ${t('password_too_short')}` );
+      return;
+    };
     try {
         setLoading(true);
+        // to register
         await axios.post('http://localhost:4000/api/auth/register', { username, email, password });
+        // to login after register 
+        const res = await axios.post('http://localhost:4000/api/auth/login', { email, password });
+        const { token, user } = res.data;
+        login(token, user);
         setShowToast(true);
         setError('');
-        navigate('/login');
+        navigate('/home');
     } catch (err) {
-        setError('Registration failed');
+        setError(err.response?.data?.message || 'Registration failed');
     } finally {
         setLoading(false);
     }

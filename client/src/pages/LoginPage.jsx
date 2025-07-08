@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Button, Form, Container, Row, Col, Alert } from 'react-bootstrap'
+import { Card, Button, Form, Container, Row, Col, Alert, Toast , ToastContainer } from 'react-bootstrap'
 import { AuthContext } from '../ContextApi/auth-context'
 import { useContext } from 'react'
 import { LanguageContext } from '../components/LanguageContext'
@@ -11,20 +11,24 @@ const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [showToast, setShowToast] = useState(false);
     const {login} = useContext(AuthContext);
     const {t } = useContext(LanguageContext);
 
     const handleSubmit = async(e) => {
         e.preventDefault();
         try {
-
-    const res = await axios.post('http://localhost:4000/api/auth/login', { email, password });
-        const { token, user } = res.data;
-        login(token, user);
-       navigate('/home');
-    } catch (error) {
-        console.log(error);
+            setLoading(true);
+            setError('');
+             const res = await axios.post('http://localhost:4000/api/auth/login', { email, password });
+             const { token, user } = res.data;
+             login(token, user);
+             navigate('/home');
+        } catch (error) {
             setError(error?.response?.data?.message || 'Login failed error in the server');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -65,8 +69,8 @@ const LoginPage = () => {
                                             required
                                         />
                                     </Form.Group>
-                                    <Button variant="success" type="submit" className="w-100 mb-2">
-                                        {t('login')}
+                                    <Button variant="success" type="submit" className="w-100 mb-2" disabled={loading}>
+                                        { loading ? t('loading') : t('login')}
                                     </Button>
                                 </Form>
                                 <div className="text-center mt-3">
@@ -80,6 +84,14 @@ const LoginPage = () => {
                     </Col>
                 </Row>
             </Container>
+            <ToastContainer position='top-center' className="p-3" style={{ zIndex: 1 }}>
+                <Toast onClose={() => setShowToast(false)} show={showToast} delay={3000} autohide>
+                    <Toast.Header>
+                        <strong className="me-auto">{t('success')}</strong>
+                    </Toast.Header>
+                    <Toast.Body>{t('login_success')}</Toast.Body>
+                </Toast>
+            </ToastContainer>
         </div>
     )
 }
