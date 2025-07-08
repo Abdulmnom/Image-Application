@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import { AuthContext } from '../ContextApi/auth-context'
+import { LanguageContext } from '../components/LanguageContext'
 import { Form, Button, Container, Card, Alert, Row, Col } from 'react-bootstrap'
 
 const UploadForm = () => {
@@ -9,13 +10,14 @@ const UploadForm = () => {
   const [image, setImage] = React.useState(null);
   const [message, setMessage] = React.useState('');
   const { token } = React.useContext(AuthContext);
+  const { t } = React.useContext(LanguageContext);
 
   // Handle form submit for uploading image
   const handleSubmit = async (e) => {
     e.preventDefault();
     const PORT = `http://localhost:4000/api/images/upload`;
     if (!image) {
-      setMessage('Please select an image');
+      setMessage(t('select_image'));
       return;
     }
     const formData = new FormData();
@@ -30,12 +32,12 @@ const UploadForm = () => {
           Authorization: token,
         },
       });
-      setMessage(res?.data?.message || 'Image uploaded successfully');
+      setMessage(res?.data?.message || t('upload_success'));
       setTitle('');
       setDescription('');
       setImage(null);
     } catch (err) {
-      setMessage(err?.response?.data?.message || 'Failed to upload image');
+      setMessage(err?.response?.data?.message || t('upload_failed'));
     }
   };
 
@@ -54,32 +56,32 @@ const UploadForm = () => {
             <Card className="shadow-lg" style={{ borderRadius: '20px' }}>
               <Card.Body>
                 <Card.Title className="mb-4 text-center" style={{ fontWeight: 'bold', fontSize: '2rem', color: '#28a745' }}>
-                  📤 Upload New Image
+                  📤 {t('upload_image')}
                 </Card.Title>
-                {message && <Alert variant={message.includes('success') ? 'success' : 'danger'}>{message}</Alert>}
+                {message && <Alert variant={message.includes(t('upload_success')) ? 'success' : 'danger'}>{message}</Alert>}
                 <Form onSubmit={handleSubmit}>
                   <Form.Group className="mb-3" controlId="formTitle">
-                    <Form.Label>Image Title</Form.Label>
+                    <Form.Label>{t('image_title')}</Form.Label>
                     <Form.Control
                       type="text"
-                      placeholder="Enter image title"
+                      placeholder={t('image_title_placeholder')}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       required
                     />
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formDescription">
-                    <Form.Label>Image Description</Form.Label>
+                    <Form.Label>{t('image_description')}</Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={3}
-                      placeholder="Enter image description"
+                      placeholder={t('image_description_placeholder')}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                     />
                   </Form.Group>
                   <Form.Group className="mb-4" controlId="formImage">
-                    <Form.Label>Choose Image</Form.Label>
+                    <Form.Label>{t('choose_image')}</Form.Label>
                     <Form.Control
                       type="file"
                       accept="image/png, image/jpeg, image/jpg, image/gif"
@@ -88,7 +90,7 @@ const UploadForm = () => {
                     />
                   </Form.Group>
                   <Button variant="success" type="submit" className="w-100">
-                    Upload Image
+                    {t('upload')}
                   </Button>
                 </Form>
               </Card.Body>

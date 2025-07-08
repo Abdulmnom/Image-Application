@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Card, Button, Form, Container, Row, Col, Alert } from 'react-bootstrap'
 import { AuthContext } from '../ContextApi/auth-context'
 import { useContext } from 'react'
+import { LanguageContext } from '../components/LanguageContext'
 import axios from 'axios'
 
 const LoginPage = () => {
@@ -11,6 +12,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const {login} = useContext(AuthContext);
+    const {t } = useContext(LanguageContext);
 
     const handleSubmit = async(e) => {
         e.preventDefault();
@@ -27,7 +29,7 @@ const LoginPage = () => {
     };
 
     return (
-        <div style={{
+       <div style={{
             minHeight: '100vh',
             display: 'flex',
             alignItems: 'center',
@@ -39,38 +41,38 @@ const LoginPage = () => {
                         <Card className="shadow-lg" style={{ borderRadius: '20px' }}>
                             <Card.Body>
                                 <Card.Title className="mb-4 text-center" style={{ fontWeight: 'bold', fontSize: '2rem', color: '#28a745' }}>
-                                    تسجيل الدخول
+                                    {t('login_title')}
                                 </Card.Title>
-                               {error && <Alert variant="danger">{error}</Alert>}
+                                {error && <Alert variant="danger">{error}</Alert>}
                                 <Form onSubmit={handleSubmit}>
-                                    <Form.Group className="mb-3" controlId="formUsername">
-                                        <Form.Label>Email</Form.Label>
+                                    <Form.Group className="mb-3" controlId="formEmail">
+                                        <Form.Label>{t('email')}</Form.Label>
                                         <Form.Control
-                                            type="text"
-                                            placeholder="User Name"
+                                            type="email"
+                                            placeholder={t('email_placeholder')}
                                             value={email}
                                             onChange={e => setEmail(e.target.value)}
                                             required
                                         />
                                     </Form.Group>
                                     <Form.Group className="mb-4" controlId="formPassword">
-                                        <Form.Label>password</Form.Label>
+                                        <Form.Label>{t('password')}</Form.Label>
                                         <Form.Control
                                             type="password"
-                                            placeholder="Password"
+                                            placeholder={t('password_placeholder')}
                                             value={password}
                                             onChange={e => setPassword(e.target.value)}
                                             required
                                         />
                                     </Form.Group>
                                     <Button variant="success" type="submit" className="w-100 mb-2">
-                                      Login
+                                        {t('login')}
                                     </Button>
                                 </Form>
                                 <div className="text-center mt-3">
-                                    <span>You don't have an account? </span>
+                                    <span>{t('no_account')}</span>
                                     <Button variant="outline-success" size="sm" onClick={() => navigate('/register')}>
-                                       Create Account
+                                        {t('create_account')}
                                     </Button>
                                 </div>
                             </Card.Body>

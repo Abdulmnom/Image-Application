@@ -37,7 +37,7 @@ const Navbar = () => {
             </Button>
             {token ? (
               <>
-                <span className="text-success fw-bold">Welcome, {user?.username}</span>
+                <span className="text-success fw-bold">Welcome, {user?.username  || user?.email || ''}</span>
                 <Button variant="outline-danger" size="sm" onClick={handleLogout}>Logout</Button>
               </>
             ) : (
@@ -47,7 +47,7 @@ const Navbar = () => {
               </>
             )}
             <Button variant="outline-secondary" size="sm" onClick={toggleLang}>
-  🌐          {lang === 'ar' ? 'English' : 'عربي'}
+              🌐{lang === 'ar' ? 'English' : 'عربي'}
             </Button>
           </Nav>
         </BsNavbar.Collapse>

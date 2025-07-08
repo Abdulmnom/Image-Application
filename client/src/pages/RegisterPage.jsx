@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react'
-import { Card, Button, Form, Container, Row, Col, Alert } from 'react-bootstrap'
+import { Card, Button, Form, Container, Row, Col, Alert ,Toast , ToastContainer } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { AuthContext } from '../ContextApi/auth-context'
+import { LanguageContext } from '../components/LanguageContext'
 import axios from 'axios'
 
 const RegisterPage = () => {
@@ -13,7 +14,9 @@ const RegisterPage = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const [showToast, setShowToast] = useState(false); // [value , set]
     const [loading, setLoading] = useState(false);
+    const { t } = useContext(LanguageContext);
 
 const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +27,7 @@ const handleSubmit = async (e) => {
     try {
         setLoading(true);
         await axios.post('http://localhost:4000/api/auth/register', { username, email, password });
+        setShowToast(true);
         setError('');
         navigate('/login');
     } catch (err) {
@@ -33,82 +37,98 @@ const handleSubmit = async (e) => {
     }
 };
 
-    return (
-        <div style={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-        }}>
-            <Container>
-                <Row className="justify-content-center">
-                    <Col xs={12} md={6} lg={4}>
-                        <Card className="shadow-lg" style={{ borderRadius: '20px' }}>
-                            <Card.Body>
-                                <Card.Title className="mb-4 text-center" style={{ fontWeight: 'bold', fontSize: '2rem', color: '#28a745' }}>
-                                    Create New Account
-                                </Card.Title>
-                                {error && (
-                                    <Alert variant="danger">{error}</Alert>
-                                )}
-                                <Form onSubmit={handleSubmit}>
-                                    <Form.Group className="mb-3" controlId="registerUsername">
-                                        <Form.Label>Username</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="Enter username"
-                                            value={username}
-                                            onChange={e => setUsername(e.target.value)}
-                                            required
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className="mb-3" controlId="registerEmail">
-                                        <Form.Label>Email</Form.Label>
-                                        <Form.Control
-                                            type="email"
-                                            placeholder="Enter email"
-                                            value={email}
-                                            onChange={e => setEmail(e.target.value)}
-                                            required
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className="mb-3" controlId="registerPassword">
-                                        <Form.Label>Password</Form.Label>
-                                        <Form.Control
-                                            type="password"
-                                            placeholder="Enter password"
-                                            value={password}
-                                            onChange={e => setPassword(e.target.value)}
-                                            required
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className="mb-4" controlId="registerConfirmPassword">
-                                        <Form.Label>Confirm Password</Form.Label>
-                                        <Form.Control
-                                            type="password"
-                                            placeholder="Re-enter password"
-                                            value={confirmPassword}
-                                            onChange={e => setConfirmPassword(e.target.value)}
-                                            required
-                                        />
-                                    </Form.Group>
-                                    <Button variant="success" type="submit" className="w-100 mb-2" disabled={loading}>
-                                        {loading ? 'Registering...' : 'Register'}
-                                    </Button>
-                                </Form>
-                                <div className="text-center mt-3">
-                                    <span>Already have an account? </span>
-                                    <Button variant="outline-success" size="sm" onClick={() => navigate('/login')}>
-                                        Login
-                                    </Button>
-                                </div>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                </Row>
-            </Container>
-        </div>
-    )
+   return (
+  <div style={{
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }}>
+    <Container>
+      <Row className="justify-content-center">
+        <Col xs={12} md={6} lg={4}>
+          <Card className="shadow-lg" style={{ borderRadius: '20px' }}>
+            <Card.Body>
+              <Card.Title className="mb-4 text-center" style={{ fontWeight: 'bold', fontSize: '2rem', color: '#28a745' }}>
+                {t('register')}
+              </Card.Title>
+
+              {error && (
+                <Alert variant="danger">{error}</Alert>
+              )}
+
+              <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3" controlId="registerUsername">
+                  <Form.Label>{t('username')}</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder={t('username')}
+                    value={username}
+                    onChange={e => setUsername(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="registerEmail">
+                  <Form.Label>{t('email')}</Form.Label>
+                  <Form.Control
+                    type="email"
+                    placeholder={t('email')}
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="registerPassword">
+                  <Form.Label>{t('password')}</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder={t('password')}
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-4" controlId="registerConfirmPassword">
+                  <Form.Label>{t('confirm_password')}</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder={t('confirm_password')}
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+
+                <Button variant="success" type="submit" className="w-100 mb-2" disabled={loading}>
+                  {loading ? t('registering') : t('register')}
+                </Button>
+              </Form>
+
+              <div className="text-center mt-3">
+                <span>{t('already_have_account')} </span>
+                <Button variant="outline-success" size="sm" onClick={() => navigate('/login')}>
+                  {t('login')}
+                </Button>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+    <ToastContainer position="bottom-end" className="p-3">
+  <Toast onClose={() => setShowToast(false)} show={showToast} delay={3000} autohide bg="success">
+      <Toast.Header>
+        <strong className="me-auto">🎉 {t('register_success') || 'Success'}</strong>
+      </Toast.Header>
+      <Toast.Body className="text-white">{t('welcome')}, {username}!</Toast.Body>
+    </Toast>
+    </ToastContainer>
+  </div>
+);
+
 }
 
 export default RegisterPage
