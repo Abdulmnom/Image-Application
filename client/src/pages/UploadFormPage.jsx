@@ -6,6 +6,7 @@ import {
   Form, Button, Container, Card, Row, Col,
   Toast, ToastContainer
 } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'
 
 const UploadForm = () => {
   const [title, setTitle] = React.useState('');
@@ -16,6 +17,7 @@ const UploadForm = () => {
 
   const { token } = React.useContext(AuthContext);
   const { t } = React.useContext(LanguageContext);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,6 +47,11 @@ const UploadForm = () => {
       setTitle('');
       setDescription('');
       setImage(null);
+      // Redirect to the home page after 1.5 seconds
+       setTimeout(() => {
+        navigate('/home'); 
+      }, 1500);
+
     } catch (err) {
       setToastMessage(err?.response?.data?.message || t('upload_failed'));
       setShowToast(true);
@@ -54,6 +61,7 @@ const UploadForm = () => {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Container>
+        
         <Row className="justify-content-center">
           <Col xs={12} md={8} lg={6}>
             <Card className="shadow-lg" style={{ borderRadius: '20px' }}>

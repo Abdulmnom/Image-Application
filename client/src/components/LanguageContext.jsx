@@ -69,6 +69,11 @@ const translations = {
    password_not_match: 'كلمة المرور غير متطابقة',
    success : 'نجاح',
    loading: 'جاري التحميل',
+   like: 'إعجاب',
+  unlike: 'إلغاء الإعجاب',
+   who_give_like: 'من أعجب بهذه الصورة؟',
+   no_likes_yet: 'لا يوجد إعجابات بعد'
+   
    
   },
   en: {
@@ -135,6 +140,10 @@ const translations = {
    password_not_match: 'Passwords do not match',
    success : 'Success',
    loading: 'Loading',
+   like: 'Like',
+   unlike: 'Unlike',
+   who_give_like: 'Who liked this image?',
+   no_likes_yet: 'No likes yet'
   
   }
 };

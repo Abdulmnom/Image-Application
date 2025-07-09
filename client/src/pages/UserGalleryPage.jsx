@@ -2,9 +2,10 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import {
   Card, Button, Container, Row, Col, Form, Modal, Toast, ToastContainer
-} from 'react-bootstrap';
+ , } from 'react-bootstrap';
 import { AuthContext } from '../ContextApi/auth-context';
 import { LanguageContext } from '../components/LanguageContext';
+
 
 const UserGalleryPage = () => {
   const { token } = useContext(AuthContext);
@@ -48,9 +49,11 @@ const UserGalleryPage = () => {
     } catch (err) {
       console.error('❌ Failed to delete image:', err);
     }
-
     setDeleteId(null);
-  };
+    setEditingId(null);        
+    setNewTitle('');            
+    setNewDescription('');  
+      };
 
   const handleUpdate = async (id) => {
     try {
@@ -160,7 +163,12 @@ const UserGalleryPage = () => {
       </ToastContainer>
 
       {/* Delete Modal */}
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+      <Modal show={showDeleteModal} onHide={() => {setShowDeleteModal(false)
+        setEditingId(null);
+        setNewTitle('');
+        setNewDescription('');
+      }} centered>
+        
         <Modal.Body className="text-center">
           <h5>{t('confirm_delete')}</h5>
           <div className="d-flex justify-content-center gap-3 mt-4">
