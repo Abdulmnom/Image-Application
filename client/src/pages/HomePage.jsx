@@ -10,33 +10,66 @@ function HomePage() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showLikesModal, setShowLikesModal] = useState(false);
   const [likedUsers, setLikedUsers] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const { token, user } = useContext(AuthContext);
   const { t } = useContext(LanguageContext);
 
   const fetchImages = async () => {
+    setIsLoading(true);
     try {
       const res = await axios.get("http://localhost:4000/api/images");
       setImages(res.data);
     } catch (error) {
       console.error("❌ Failed to fetch images", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchImages();
   }, []);
-// like and unlike
-  const handleToggleLike = async (image) => {
-    const hasLiked = image.likesBy.includes(user?.userId);
-    const endpoint = hasLiked ? "unlike" : "like";
 
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
+
+  const handleLike = async (imageId) => {
     try {
-      await axios.post(`http://localhost:4000/api/images/${image._id}/${endpoint}`, {}, {
-        headers: { Authorization: token }
-      });
+      const res = await axios.post(
+        `http://localhost:4000/api/images/${imageId}/like`,
+        {},
+        { headers: { Authorization: token } }
+      );
       fetchImages();
     } catch (error) {
-      console.error(`❌ Failed to ${endpoint} image`, error);
+      if (error.response?.data?.message) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage("⚠️ Failed to like image. Please try again.");
+      }
+      console.error("❌ Like error:", error);
+    }
+  };
+
+  const handleUnlike = async (imageId) => {
+    try {
+      await axios.post(
+        `http://localhost:4000/api/images/${imageId}/unlike`,
+        {},
+        { headers: { Authorization: token } }
+      );
+      fetchImages();
+    } catch (error) {
+      console.error("❌ Failed to unlike image", error);
     }
   };
 
@@ -55,14 +88,44 @@ function HomePage() {
   return (
     <div style={{ minHeight: "100vh", padding: "40px 0" }}>
       <Container>
+        {isLoading ? (
+            <div className="d-flex justify-content-center my-5">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : images.length === 0 ? (
+            <p className="text-center text-muted my-5">{t('no_images_found') || "No images found."}</p>
+          ) : (
+            <Row className="g-4">
+              {images.map((img) => {
+                
+              
+                return (
+                  <Col xs={12} md={6} lg={4} key={img._id}>
+                    
+                  </Col>
+                );
+              })}
+            </Row>
+          )}
+        {errorMessage && (
+          <div className="alert alert-warning alert-dismissible fade show" role="alert">
+            {errorMessage}
+            <button type="button" className="btn-close" onClick={() => setErrorMessage(null)}></button>
+          </div>
+        )}
+
         <h2 className="text-center mb-4" style={{ color: "#1565c0", fontWeight: "bold" }}>
           📸 {t('public_gallery')}
         </h2>
+
         <Row className="g-4">
           {images.map((img) => {
             const hasLiked = token && img.likesBy.includes(user?.userId);
 
             return (
+              
               <Col xs={12} md={6} lg={4} key={img._id}>
                 <Card className="shadow-sm" style={{ borderRadius: "18px", minHeight: "350px" }}>
                   <Card.Img
@@ -76,21 +139,38 @@ function HomePage() {
                     <Card.Title style={{ color: "#1565c0", fontWeight: "bold" }}>{img.title}</Card.Title>
                     <Card.Text>{img.description}</Card.Text>
                     <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                      <span style={{ color: "#e53935", fontWeight: "bold" }}>❤️ {img.likes} {t('likes')}</span>
-                      {token && (
-                        <Button
-                          variant={hasLiked ? "danger" : "outline-primary"}
-                          size="sm"
-                          onClick={() => handleToggleLike(img)}
-                        >
-                          {hasLiked ? t('unlike') : t('like')}
-                        </Button>
-                      )}
+                      <span style={{ color: "#e53935", fontWeight: "bold" }}>
+                        ❤️ {img.likes} {t('likes')}
+                      </span>
 
                       {token && (
-                        <Button variant="outline-info" size="sm" onClick={() => fetchLikedUsers(img)}>
-                          {t('who_give_like')}
-                        </Button>
+                        <>
+                          {!hasLiked && (
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              onClick={() => handleLike(img._id)}
+                            >
+                              <FaRegHeart className="me-1" /> {t('like')}
+                            </Button>
+                          )}
+                          {hasLiked && (
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => handleUnlike(img._id)}
+                            >
+                              <FaHeart className="me-1" /> {t('unlike')}
+                            </Button>
+                          )}
+                          <Button
+                            variant="outline-info"
+                            size="sm"
+                            onClick={() => fetchLikedUsers(img)}
+                          >
+                            {t('who_give_like')}
+                          </Button>
+                        </>
                       )}
                     </div>
                   </Card.Body>
@@ -100,8 +180,11 @@ function HomePage() {
           })}
         </Row>
 
-        {/* Image Modal Preview */}
+        {/* Image Preview Modal */}
         <Modal show={!!selectedImage} onHide={() => setSelectedImage(null)} centered size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>{selectedImage?.title || t('image_preview')}</Modal.Title>
+          </Modal.Header>
           <Modal.Body className="d-flex justify-content-center align-items-center" style={{ background: "#f8f9fa" }}>
             {selectedImage && (
               <img
@@ -113,7 +196,7 @@ function HomePage() {
           </Modal.Body>
         </Modal>
 
-        {/* Who liked modal */}
+        {/* Likes Modal */}
         <Modal show={showLikesModal} onHide={() => setShowLikesModal(false)} centered>
           <Modal.Header closeButton>
             <Modal.Title>{t('who_give_like')}</Modal.Title>
@@ -122,7 +205,9 @@ function HomePage() {
             {likedUsers.length > 0 ? (
               <ListGroup>
                 {likedUsers.map((u, index) => (
-                  <ListGroup.Item key={index}>{u.username || u.email}</ListGroup.Item>
+                  <ListGroup.Item key={u._id || index}>
+                    {u.username || u.email || 'Unknown User'}
+                  </ListGroup.Item>
                 ))}
               </ListGroup>
             ) : (

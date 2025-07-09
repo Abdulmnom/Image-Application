@@ -70,7 +70,7 @@ const translations = {
    success : 'نجاح',
    loading: 'جاري التحميل',
    like: 'إعجاب',
-  unlike: 'إلغاء الإعجاب',
+   unlike: 'إلغاء الإعجاب',
    who_give_like: 'من أعجب بهذه الصورة؟',
    no_likes_yet: 'لا يوجد إعجابات بعد'
    
