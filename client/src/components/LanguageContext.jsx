@@ -72,7 +72,8 @@ const translations = {
    like: 'إعجاب',
    unlike: 'إلغاء الإعجاب',
    who_give_like: 'من أعجب بهذه الصورة؟',
-   no_likes_yet: 'لا يوجد إعجابات بعد'
+   no_likes_yet: 'لا يوجد إعجابات بعد',
+    image_preview: 'معاينة الصورة'
    
    
   },
@@ -143,7 +144,8 @@ const translations = {
    like: 'Like',
    unlike: 'Unlike',
    who_give_like: 'Who liked this image?',
-   no_likes_yet: 'No likes yet'
+   no_likes_yet: 'No likes yet',
+   image_preview: 'Image Preview'
   
   }
 };

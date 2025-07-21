@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const ImageSchema = new mongoose.Schema({
-    tittle: String,
+    title: String,
+    image: String,
     description: String,
     imagePath: String,
     likes: { type: Number, default: 0 },

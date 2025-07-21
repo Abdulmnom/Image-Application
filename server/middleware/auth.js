@@ -18,7 +18,7 @@ const verifyToken = (req, res , next) => {
         next();
     } catch (error) {
         console.error(error);
-        res.status(400).json({ message: 'Invalid token' });
+        res.status(400).json({ message: 'Invalid token you need to login' });
     }
 }
 

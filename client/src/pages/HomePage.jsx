@@ -42,6 +42,12 @@ function HomePage() {
     }
   }, [errorMessage]);
 
+  useEffect(() => {
+  if (selectedImage) {
+    console.log(selectedImage);
+  }
+  }, [selectedImage]);
+
   const handleLike = async (imageId) => {
     try {
       const res = await axios.post(
